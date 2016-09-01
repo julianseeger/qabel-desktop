@@ -1,6 +1,5 @@
 package de.qabel.desktop;
 
-import com.sun.javafx.application.HostServicesDelegate;
 import com.sun.javafx.application.PlatformImpl;
 import de.qabel.box.storage.AbstractNavigation;
 import de.qabel.core.repository.sqlite.ClientDatabase;
@@ -24,8 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -82,7 +83,13 @@ public class Kernel {
 
         initContainer();
         initGui();
-        documentLauncher = HostServicesDelegate.getInstance(app)::showDocument;
+        documentLauncher = (url) -> {
+            try {
+                Desktop.getDesktop().browse(new URI(url));
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        };
     }
 
     public void initGui() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
